@@ -1,13 +1,90 @@
-﻿services:
+﻿name: 'smart-bin'
+
+services:
   smartbin.api:
     image: smartbin.api
+    ports:
+      - "8080:8080"
+      - "8081:8081"
     build:
       context: .
       dockerfile: SmartBin.Api/Dockerfile
+    depends_on:
+      - smartbin.mongo
+    restart: no
 
-  smartbin.domain:
-    image: smartbin.domain
-    build:
-      context: .
-      dockerfile: SmartBin.Domain/Dockerfile
+  smartbin.mongo:
+    image: mongo:8.2
+    container_name: smartbin.mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: smartbin
+      MONGO_INITDB_ROOT_PASSWORD: dev$root
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    
+  smartbin.otel-collector:
+    image: otel/opentelemetry-collector:0.140.0
+    container_name: smartbin.otel-collector
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yml:ro
+    ports:
+      - "1777:1777" # pprof (for debug)
+      - "4317:4317" # gRPC
+      - "4318:4318" # HTTP
+      - "13133:13133" # Healthcheks
+    restart: unless-stopped
 
+  smartbin.grafana:
+    image: grafana/grafana:12.1
+    container_name: smartbin.grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: smartbin
+      GF_SECURITY_ADMIN_PASSWORD: dev$root
+    ports:
+      - "3030:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - smartbin.otel-collector
+    restart: unless-stopped
+
+  smartbin.prometheus:
+    image: prom/prometheus:v3.7.3
+    container_name: smartbin.prometheus
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command: [ "--config.file=/etc/prometheus/prometheus.yaml", "--storage.tsdb.retention.time=45d", "--storage.tsdb.retention.size=15GB" ]
+    restart: unless-stopped
+    
+  smartbin.seq:
+    image: datalust/seq:2025.2
+    container_name: smartbin.seq
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FSI_APIKEY: "devkey123"
+    ports:
+      - "5341:5341"
+    volumes:
+      - seq_data:/data
+    restart: unless-stopped
+    
+networks:
+  smartbin_network:
+    external: true
+    
+volumes:
+  mongodb_data:
+    driver: local
+  grafana_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  seq_data:
+    driver: local

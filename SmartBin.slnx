@@ -2,6 +2,8 @@
   <Folder Name="/Solution Items/">
     <File Path="compose.yaml" />
   </Folder>
-  <Project Path="SmartBin.Api/SmartBin.Api.csproj" />
-  <Project Path="SmartBin.Domain/SmartBin.Domain.csproj" />
+  <Project Path="src/SmartBin.Api/SmartBin.Api.csproj" />
+  <Project Path="src/SmartBin.Application/SmartBin.Application.csproj" />
+  <Project Path="src/SmartBin.Domain/SmartBin.Domain.csproj" />
+  <Project Path="src/SmartBin.Infrastructure/SmartBin.Infrastructure.csproj" />
 </Solution>
