@@ -1,0 +1,7 @@
+﻿services:
+  smartbin.api:
+    image: smartbin.api
+    build:
+      context: .
+      dockerfile: SmartBin.Api/Dockerfile
+
