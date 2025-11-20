@@ -13,9 +13,9 @@ if (app.Environment.IsDevelopment())
     {
         options
             .WithTitle("SmartBin API")
-            .WithTheme(ScalarTheme.Kepler)
+            .WithTheme(ScalarTheme.DeepSpace)
             .ShowOperationId()
-            .WithDefaultHttpClient(ScalarTarget.JavaScript, ScalarClient.Axios)
+            .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.Undici)
             .AddPreferredSecuritySchemes("BearerAuth")
             .AddHttpAuthentication("BearerAuth", auth =>
             {
