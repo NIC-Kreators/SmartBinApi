@@ -3,4 +3,5 @@
     <File Path="compose.yaml" />
   </Folder>
   <Project Path="SmartBin.Api/SmartBin.Api.csproj" />
+  <Project Path="SmartBin.Domain/SmartBin.Domain.csproj" />
 </Solution>

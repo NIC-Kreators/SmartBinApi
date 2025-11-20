@@ -5,3 +5,9 @@
       context: .
       dockerfile: SmartBin.Api/Dockerfile
 
+  smartbin.domain:
+    image: smartbin.domain
+    build:
+      context: .
+      dockerfile: SmartBin.Domain/Dockerfile
+
