@@ -1,26 +1,15 @@
-using MQTTnet.AspNetCore;
+using DotNetEnv.Configuration;
 using Scalar.AspNetCore;
+using SmartBin.Api.Mqtt;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
-var kestrelHttpUri = new Uri(builder.Configuration.GetValue<string>("Kestrel:Endpoints:Http:Url", "http://localhost:8080"));
+builder.Configuration
+    .AddEnvironmentVariables()
+    .AddDotNetEnv();
 
-var httpPort = kestrelHttpUri.Port;
-var mqttPort = builder.Configuration.GetValue("Mqtt:Port", 1883);
-
-builder.Services
-    .AddHostedMqttServer(mqttServer => mqttServer
-                             .WithDefaultEndpoint()
-                             .WithDefaultEndpointPort(mqttPort))
-    .AddMqttConnectionHandler()
-    .AddConnections();
-
-builder.WebHost.ConfigureKestrel(webHostOptions =>
-{
-    webHostOptions.ListenAnyIP(httpPort);
-    webHostOptions.ListenAnyIP(mqttPort, mqttOptions => mqttOptions.UseMqtt());
-});
+builder.Services.AddHostedService<MqttClientService>();
 
 var app = builder.Build();
 app.UseHttpsRedirection();
@@ -43,37 +32,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseRouting();
 app.MapGet("/hello", () => "Hello").Stable();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapConnectionHandler<MqttConnectionHandler>(
-        "/mqtt",
-        options => options.WebSockets.SubProtocolSelector = 
-            protocolList => protocolList.FirstOrDefault() ?? string.Empty);
-});
-
-app.UseMqttServer(server =>
-{
-    server.ValidatingConnectionAsync += e =>
-    {
-        Console.WriteLine($"Client '{e.ClientId}' connecting");
-        return Task.CompletedTask;
-    };
-
-    server.ClientConnectedAsync += e =>
-    {
-        Console.WriteLine($"Client '{e.ClientId}' connected");
-        return Task.CompletedTask;
-    };
-
-    server.InterceptingPublishAsync += args =>
-    {
-        Console.WriteLine($"Message from {args.ApplicationMessage.Topic} received!");
-        // TODO Handle mqtt logic
-        return Task.CompletedTask;
-    };
-});
 
 app.Run();
