@@ -4,14 +4,20 @@ services:
   smartbin.api:
     image: smartbin.api
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "1883:1883" # MQTT
+      - "8080:8080" # HTTP
     build:
       context: .
       dockerfile: SmartBin.Api/Dockerfile
     depends_on:
       - smartbin.mongo
+      - smartbin.otel-collector
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
     restart: no
+    volumes:
+      # Hot reload for development
+      - ./appsettings.Development.json:/app/appsettings.Development.json:ro
 
   smartbin.mongo:
     image: mongo:8.2
@@ -35,7 +41,7 @@ services:
       - "1777:1777" # pprof (for debug)
       - "4317:4317" # gRPC
       - "4318:4318" # HTTP
-      - "13133:13133" # Healthcheks
+      - "13133:13133" # Health checks
     restart: unless-stopped
 
   smartbin.grafana:
