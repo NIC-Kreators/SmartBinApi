@@ -1,5 +1,6 @@
 using DotNetEnv.Configuration;
 using Scalar.AspNetCore;
+using Serilog;
 using SmartBin.Api.Mqtt;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +10,13 @@ builder.Configuration
     .AddEnvironmentVariables()
     .AddDotNetEnv();
 
+builder.Host.UseSerilog((context, configuration) =>
+                            configuration.ReadFrom.Configuration(context.Configuration));
+
 builder.Services.AddHostedService<MqttClientService>();
 
 var app = builder.Build();
-app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {

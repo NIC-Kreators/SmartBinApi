@@ -3,21 +3,26 @@
 services:
   smartbin.api:
     image: smartbin.api
+    container_name: smartbin.api
     ports:
-      - "1883:1883" # MQTT
-      - "8080:8080" # HTTP
+      - "5185:5185" # HTTP
     build:
       context: .
-      dockerfile: SmartBin.Api/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: "Development"
+        PORT: 5185
     depends_on:
       - smartbin.mongo
+      - smartbin.mosquitto
       - smartbin.otel-collector
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
     restart: no
     volumes:
       # Hot reload for development
-      - ./appsettings.Development.json:/app/appsettings.Development.json:ro
+      - ./src/SmartBin.Api/appsettings.Development.json:/app/appsettings.Development.json:ro
+      - ./src/SmartBin.Api/.env:/app/.env:ro
 
   smartbin.mongo:
     image: mongo:8.2
@@ -25,16 +30,29 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: smartbin
-      MONGO_INITDB_ROOT_PASSWORD: dev$root
+      MONGO_INITDB_ROOT_USERNAME: $MONGODB_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
     volumes:
       - mongodb_data:/data/db
+    restart: unless-stopped
+  
+  smartbin.mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: smartbin.mosquitto-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./config/mosquitto/config:/mosquitto/config
+      - ./config/mosquitto/logs:/mosquitto/logs
+      - ./config/mosquitto/data:/mosquitto/data
     restart: unless-stopped
     
   smartbin.otel-collector:
     image: otel/opentelemetry-collector:0.140.0
     container_name: smartbin.otel-collector
     command: [ "--config=/etc/otel-collector-config.yml" ]
+    environment:
+      SEQ_API_KEY: $SEQ_API_KEY
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yml:ro
     ports:
@@ -42,20 +60,20 @@ services:
       - "4317:4317" # gRPC
       - "4318:4318" # HTTP
       - "13133:13133" # Health checks
+    depends_on:
+      - smartbin.seq
     restart: unless-stopped
 
   smartbin.grafana:
     image: grafana/grafana:12.1
     container_name: smartbin.grafana
     environment:
-      GF_SECURITY_ADMIN_USER: smartbin
-      GF_SECURITY_ADMIN_PASSWORD: dev$root
+      GF_SECURITY_ADMIN_USER: $GRAFANA_USERNAME
+      GF_SECURITY_ADMIN_PASSWORD: $GRAFANA_PASSWORD
     ports:
       - "3030:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-    depends_on:
-      - smartbin.otel-collector
     restart: unless-stopped
 
   smartbin.prometheus:
@@ -67,6 +85,8 @@ services:
     ports:
       - "9090:9090"
     command: [ "--config.file=/etc/prometheus/prometheus.yaml", "--storage.tsdb.retention.time=45d", "--storage.tsdb.retention.size=15GB" ]
+    depends_on:
+      - smartbin.otel-collector
     restart: unless-stopped
     
   smartbin.seq:
@@ -74,9 +94,9 @@ services:
     container_name: smartbin.seq
     environment:
       ACCEPT_EULA: "Y"
-      SEQ_FSI_APIKEY: "devkey123"
+      SEQ_FIRSTRUN_ADMINPASSWORD: $SEQ_FIRSTRUN_ADMINPASSWORD
     ports:
-      - "5341:5341"
+      - "5341:80"
     volumes:
       - seq_data:/data
     restart: unless-stopped

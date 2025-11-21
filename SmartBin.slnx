@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path="compose.yaml" />
+    <File Path="Dockerfile" />
+    <File Path="src\.dockerignore" />
   </Folder>
   <Project Path="src/SmartBin.Api/SmartBin.Api.csproj" />
   <Project Path="src/SmartBin.Application/SmartBin.Application.csproj" />

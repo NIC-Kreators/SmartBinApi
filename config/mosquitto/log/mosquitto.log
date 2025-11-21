@@ -1,0 +1,71 @@
+1763666667: mosquitto version 2.0.22 starting
+1763666667: Config loaded from /mosquitto/config/mosquitto.conf.
+1763666667: Opening ipv4 listen socket on port 1883.
+1763666667: Opening ipv6 listen socket on port 1883.
+1763666667: mosquitto version 2.0.22 running
+1763666670: mosquitto version 2.0.22 terminating
+1763666670: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763666683: mosquitto version 2.0.22 starting
+1763666683: Config loaded from /mosquitto/config/mosquitto.conf.
+1763666683: Opening ipv4 listen socket on port 1883.
+1763666683: Opening ipv6 listen socket on port 1883.
+1763666683: mosquitto version 2.0.22 running
+1763666733: New connection from 192.168.65.1:28646 on port 1883.
+1763666733: New client connected from 192.168.65.1:28646 as smart-bin-api (p5, c1, k15).
+1763666733: Client smart-bin-api closed its connection.
+1763667218: New connection from 192.168.65.1:22248 on port 1883.
+1763667218: New client connected from 192.168.65.1:22248 as smart-bin-api (p5, c1, k15).
+1763667225: Client smart-bin-api closed its connection.
+1763673635: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763697030: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763703295: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763705448: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763707249: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763711191: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763711316: New connection from 192.168.65.1:45971 on port 1883.
+1763711316: New client connected from 192.168.65.1:45971 as smart-bin-api (p5, c1, k15).
+1763715148: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763716949: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763717814: Client smart-bin-api closed its connection.
+1763717823: New connection from 192.168.65.1:50142 on port 1883.
+1763717823: New client connected from 192.168.65.1:50142 as smart-bin-api (p5, c1, k15).
+1763718235: Client smart-bin-api closed its connection.
+1763718241: New connection from 192.168.65.1:43316 on port 1883.
+1763718241: New client connected from 192.168.65.1:43316 as smart-bin-api (p5, c1, k15).
+1763718750: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763719031: Client smart-bin-api closed its connection.
+1763719083: New connection from 192.168.65.1:37607 on port 1883.
+1763719083: New client connected from 192.168.65.1:37607 as smart-bin-api (p5, c1, k15).
+1763720062: Client smart-bin-api closed its connection.
+1763720199: New connection from 192.168.65.1:20807 on port 1883.
+1763720199: New client connected from 192.168.65.1:20807 as smart-bin-api (p5, c1, k15).
+1763720330: Client smart-bin-api closed its connection.
+1763720331: New connection from 192.168.65.1:61990 on port 1883.
+1763720331: New client connected from 192.168.65.1:61990 as smart-bin-api (p5, c1, k15).
+1763720364: Client smart-bin-api closed its connection.
+1763720365: New connection from 192.168.65.1:42427 on port 1883.
+1763720365: New client connected from 192.168.65.1:42427 as smart-bin-api (p5, c1, k15).
+1763720436: Client smart-bin-api closed its connection.
+1763720438: New connection from 192.168.65.1:50940 on port 1883.
+1763720438: New client connected from 192.168.65.1:50940 as smart-bin-api (p5, c1, k15).
+1763720551: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763721207: Client smart-bin-api closed its connection.
+1763721241: New connection from 192.168.65.1:60806 on port 1883.
+1763721241: New client connected from 192.168.65.1:60806 as smart-bin-api (p5, c1, k15).
+1763721841: Client smart-bin-api closed its connection.
+1763721861: New connection from 192.168.65.1:58347 on port 1883.
+1763721861: New client connected from 192.168.65.1:58347 as smart-bin-api (p5, c1, k15).
+1763722119: Client smart-bin-api closed its connection.
+1763722352: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763722602: mosquitto version 2.0.22 terminating
+1763722602: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1763722604: mosquitto version 2.0.22 starting
+1763722604: Config loaded from /mosquitto/config/mosquitto.conf.
+1763722604: Opening ipv4 listen socket on port 1883.
+1763722604: Opening ipv6 listen socket on port 1883.
+1763722604: mosquitto version 2.0.22 running
+1763722620: New connection from 192.168.65.1:46518 on port 1883.
+1763722620: New client connected from 192.168.65.1:46518 as smart-bin-api (p5, c1, k15).
+1763723336: Client smart-bin-api closed its connection.
+1763723636: mosquitto version 2.0.22 terminating
+1763723636: Saving in-memory database to /mosquitto/data//mosquitto.db.
