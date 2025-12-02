@@ -2,6 +2,7 @@ using DotNetEnv.Configuration;
 using Scalar.AspNetCore;
 using Serilog;
 using SmartBin.Api.Mqtt;
+using SmartBin.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
@@ -14,6 +15,7 @@ builder.Host.UseSerilog((context, configuration) =>
                             configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddHostedService<MqttClientService>();
+builder.Services.AddSingleton<MongoDbService>();
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
