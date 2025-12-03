@@ -1,4 +1,5 @@
 ﻿using SmartBin.Api.GenericRepository;
+using MongoDB.Bson;
 
 namespace SmartBin.Api.Models
 {
