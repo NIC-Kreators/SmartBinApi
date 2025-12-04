@@ -26,6 +26,7 @@ builder.Services.AddSingleton<IMongoSettings>(provider =>
     provider.GetRequiredService<IOptions<MongoSettings>>().Value);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBinService, BinService>();
 
 
 var app = builder.Build();
