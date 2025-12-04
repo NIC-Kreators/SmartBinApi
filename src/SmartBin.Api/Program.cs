@@ -1,11 +1,12 @@
 using DotNetEnv.Configuration;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
+using SmartBin.Api.GenericRepository;
 using SmartBin.Api.GenericRepository;
 using SmartBin.Api.Models;
 using SmartBin.Api.Mqtt;
 using SmartBin.Api.Services;
-using SmartBin.Api.GenericRepository;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
@@ -15,21 +16,17 @@ builder.Configuration
 
 builder.Host.UseSerilog((context, configuration) =>
                             configuration.ReadFrom.Configuration(context.Configuration));
-
 builder.Services.AddHostedService<MqttClientService>();
 builder.Services.AddSingleton<MongoDbService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
+builder.Services.Configure<MongoSettings>(
+    builder.Configuration.GetSection("Database"));
 
-//builder.Services.AddScoped<IRepository<User>>(sp =>
-//    new MongoRepository<User>(sp.GetRequiredService<MongoDbService>().Users));
+builder.Services.AddSingleton<IMongoSettings>(provider =>
+    provider.GetRequiredService<IOptions<MongoSettings>>().Value);
+builder.Services.AddControllers();
+builder.Services.AddScoped<IUserService, UserService>();
 
-//builder.Services.AddScoped<IRepository<Bin>>(sp =>
-//    new MongoRepository<Bin>(sp.GetRequiredService<MongoDbService>().Bins));
-
-//builder.Services.AddScoped<IRepository<CleaningUp>>(sp =>
-//    new MongoRepository<CleaningUp>(sp.GetRequiredService<MongoDbService>().CleaningUps));
-
-//builder.Services.AddScoped<IRepository<ShiftLog>>(sp =>
-//    new MongoRepository<ShiftLog>(sp.GetRequiredService<MongoDbService>().ShiftLogs));
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
