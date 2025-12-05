@@ -1,7 +1,8 @@
-using SmartBin.Api.GenericRepository;
-using SmartBin.Api.Models;
+using SmartBin.Application.GenericRepository;
+using SmartBin.Domain.Models;
+using SmartBin.Application.Services;
 
-namespace SmartBin.Api.Services;
+namespace SmartBin.Infrastructure.Services;
 
 public class BinService : IBinService
 {
@@ -51,6 +52,21 @@ public class BinService : IBinService
             throw new KeyNotFoundException($"Bin '{id}' not found.");
 
         _repository.DeleteById(id);
+        await Task.CompletedTask;
+    }
+
+    // Реализация метода интерфейса для обновления телеметрии
+    public async Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry)
+    {
+        var existing = await _repository.FindById(binId);
+        if (existing == null)
+            throw new KeyNotFoundException($"Bin '{binId}' not found.");
+
+        telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
+        existing.Telemetry = telemetry;
+        existing.UpdatedAt = DateTime.UtcNow;
+
+        _repository.ReplaceOne(existing);
         await Task.CompletedTask;
     }
 }

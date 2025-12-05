@@ -1,8 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using SmartBin.Api.GenericRepository;
 
-namespace SmartBin.Api.Models
+namespace SmartBin.Domain.Models
 {
     public class Bin : IEntity
     {

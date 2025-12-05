@@ -1,6 +1,6 @@
-using SmartBin.Api.Models;
+using SmartBin.Domain.Models;
 
-namespace SmartBin.Api.Services
+namespace SmartBin.Application.Services
 {
     public interface IShiftLogService
     {
@@ -10,3 +10,4 @@ namespace SmartBin.Api.Services
         Task EndShiftAsync(string shiftId, DateTime endedAt, IEnumerable<string> cleanedBinIds, double distanceKm, string? route = null);
         Task DeleteAsync(string id);
     }
+}

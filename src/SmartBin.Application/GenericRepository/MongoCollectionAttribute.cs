@@ -1,4 +1,4 @@
-﻿namespace SmartBin.Api.GenericRepository
+﻿namespace SmartBin.Application.GenericRepository
 {
     public class MongoCollectionAttribute : Attribute
     {

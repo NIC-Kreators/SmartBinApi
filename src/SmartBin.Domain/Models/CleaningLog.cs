@@ -1,7 +1,6 @@
-﻿using SmartBin.Api.GenericRepository;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 
-namespace SmartBin.Api.Models
+namespace SmartBin.Domain.Models
 {
     public class CleaningLog : IEntity
     {

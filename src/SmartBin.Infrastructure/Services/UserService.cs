@@ -1,7 +1,8 @@
-﻿using SmartBin.Api.GenericRepository;
-using SmartBin.Api.Models;
+﻿using SmartBin.Application.GenericRepository;
+using SmartBin.Domain.Models;
+using SmartBin.Application.Services;
 
-namespace SmartBin.Api.Services
+namespace SmartBin.Infrastructure.Services
 {
     public class UserService : IUserService
     {

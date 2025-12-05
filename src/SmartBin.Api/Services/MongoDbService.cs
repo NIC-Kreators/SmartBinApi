@@ -1,4 +1,4 @@
-﻿using SmartBin.Api.Models;
+﻿using SmartBin.Domain.Models;
 using MongoDB.Driver;
 
 namespace SmartBin.Api.Services

@@ -1,4 +1,4 @@
-﻿namespace SmartBin.Api.Models
+﻿namespace SmartBin.Domain.Models
 {
     public class BinTelemetry
     {

@@ -1,6 +1,6 @@
-using SmartBin.Api.Models;
+using SmartBin.Domain.Models;
 
-namespace SmartBin.Api.Services
+namespace SmartBin.Application.Services
 {
     public interface ICleaningLogService
     {

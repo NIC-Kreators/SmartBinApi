@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
+		<ProjectReference Include="..\SmartBin.Domain\SmartBin.Domain.csproj" />
+		<ProjectReference Include="..\SmartBin.Application\SmartBin.Application.csproj" />
+
+	</ItemGroup>
 </Project>

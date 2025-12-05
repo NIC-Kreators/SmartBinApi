@@ -1,8 +1,9 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq.Expressions;
+using SmartBin.Domain.Models;
 
-namespace SmartBin.Api.GenericRepository
+namespace SmartBin.Application.GenericRepository
 {
     public class MongoRepository<TDocument> : IRepository<TDocument> where TDocument : IEntity
     {

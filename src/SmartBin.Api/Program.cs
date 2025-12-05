@@ -2,11 +2,12 @@ using DotNetEnv.Configuration;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
-using SmartBin.Api.GenericRepository;
-using SmartBin.Api.GenericRepository;
-using SmartBin.Api.Models;
-using SmartBin.Api.Mqtt;
+using SmartBin.Application.GenericRepository;
 using SmartBin.Api.Services;
+using SmartBin.Api.Mqtt;
+using SmartBin.Infrastructure.Services;
+using SmartBin.Application.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 

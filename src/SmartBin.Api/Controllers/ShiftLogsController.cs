@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using SmartBin.Api.Models;
-using SmartBin.Api.Services;
+using SmartBin.Domain.Models;
+using SmartBin.Application.Services;
 
 namespace SmartBin.Api.Controllers;
 

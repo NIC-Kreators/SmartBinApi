@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace SmartBin.Api.GenericRepository
+namespace SmartBin.Domain.Models
 {
     public interface IEntity
     {
