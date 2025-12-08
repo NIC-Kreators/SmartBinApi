@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using SmartBin.Domain.Models;
 using SmartBin.Application.Services;
+using SmartBin.Domain.Models;
+using SmartBin.Domain.Models.Dto;
+using System.Security.Authentication;
 
 namespace SmartBin.Api.Controllers;
 
@@ -46,5 +48,43 @@ public class UsersController : ControllerBase
     {
         await _userService.DeleteAsync(id);
         return NoContent();
+    }
+    // POST /api/auth/register
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
+    {
+        try
+        {
+            // Вызов метода из слоя Application
+            var tokenPair = await _userService.RegisterAsync(registrationDto);
+
+            // Возврат токенов клиенту
+            return Ok(tokenPair);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Например, если пользователь уже существует
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // POST /api/auth/login
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto) // Создайте UserLoginDto, если нужно
+    {
+        try
+        {
+            // Вызов метода из слоя Application
+            var tokenPair = await _userService.LoginAsync(loginDto.Nickname, loginDto.Password);
+
+            // Возврат токенов клиенту
+            return Ok(tokenPair);
+        }
+        catch (AuthenticationException ex)
+        {
+            // Неверный логин/пароль
+            return Unauthorized(new { message = ex.Message });
+        }
+        // Здесь могут быть другие исключения, которые нужно обработать
     }
 }

@@ -28,7 +28,8 @@ builder.Services.AddSingleton<IMongoSettings>(provider =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBinService, BinService>();
-
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
