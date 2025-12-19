@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SmartBin.Application.Services;
+using SmartBin.Domain.Models;
 using System;
 using System.Collections.Concurrent;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -29,7 +31,7 @@ namespace SmartBin.Infrastructure.Services
             _secretKeyBytes = Encoding.ASCII.GetBytes(secret);
         }
 
-        private string GenerateAccessToken(string userId, string userName)
+        private string GenerateAccessToken(string userId, string userName, UserRole role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -38,10 +40,12 @@ namespace SmartBin.Infrastructure.Services
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
-                new Claim(ClaimTypes.Name, userName)
-                // Добавьте другие Claims (роли и т.д.)
+              new Claim(JwtRegisteredClaimNames.Sub, userId),
+              new Claim(ClaimTypes.Name, userName),
+              // 💡 Добавляем Claim с типом роли
+              new Claim(ClaimTypes.Role, role.Name)
             };
+
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -63,9 +67,9 @@ namespace SmartBin.Infrastructure.Services
             return Guid.NewGuid().ToString("N");
         }
 
-        public async Task<TokenPair> GenerateTokenPairAsync(string userId, string userName)
+        public async Task<TokenPair> GenerateTokenPairAsync(string userId, string userName, UserRole role)
         {
-            var accessToken = GenerateAccessToken(userId, userName);
+            var accessToken = GenerateAccessToken(userId, userName, role);
             var refreshToken = GenerateRefreshToken();
 
             // ⚠️ В продакшене: сохранение Refresh Token в БД с его сроком действия (3 месяца)

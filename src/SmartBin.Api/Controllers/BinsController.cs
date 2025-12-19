@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartBin.Domain.Models;
 using SmartBin.Application.Services;
+using SmartBin.Api.Attributes;
 
 namespace SmartBin.Api.Controllers;
 
@@ -111,6 +112,7 @@ public class BinsController : ControllerBase
         public string Status { get; set; } = null!;
     }
 
+   
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> PatchStatus(string id, [FromBody] UpdateStatusRequest req)
     {

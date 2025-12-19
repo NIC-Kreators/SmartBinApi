@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartBin.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace SmartBin.Application.Services
     public interface IJwtService
     {
         // Возвращает пару: обычный токен и рефреш-токен
-        Task<TokenPair> GenerateTokenPairAsync(string userId, string userName);
+        Task<TokenPair> GenerateTokenPairAsync(string userId, string userName, UserRole role);
 
         // Валидирует рефреш-токен
         Task<bool> IsRefreshTokenValidAsync(string userId, string refreshToken);

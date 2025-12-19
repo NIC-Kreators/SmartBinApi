@@ -65,8 +65,7 @@ namespace SmartBin.Infrastructure.Services
         }
         public async Task<TokenPair> RegisterAsync(UserRegistrationDto registrationDto)
         {
-            // 1. Проверка существования пользователя (предполагаем, что Nickname уникален)
-            // Используем FindOne(Expression) из вашего репозитория.
+            // 1. Проверка существования пользователя (по Nickname)
             Expression<Func<User, bool>> filter = u => u.Nickname == registrationDto.Nickname;
             var existingUser = await _repository.FindOne(filter);
 
@@ -81,10 +80,13 @@ namespace SmartBin.Infrastructure.Services
             // 3. Создание новой сущности
             var newUser = new User
             {
-                // Nickname используется как логин в этом примере
                 Nickname = registrationDto.Nickname,
-                FullName = registrationDto.FullName, // Предполагаем, что FullName есть в DTO
-                Role = "User", // Устанавливаем роль по умолчанию
+                // 💡 Используем FullName из DTO, если оно там есть
+                FullName = registrationDto.FullName,
+
+                // 💡 ИЗМЕНЕНИЕ: Устанавливаем роль как объект record (GuestRole.Instance)
+                Role = GuestRole.Instance,
+
                 PasswordHash = hashedPassword,
                 PasswordRecreationRequired = false,
                 PasswordLastChangedAt = DateTime.UtcNow,
@@ -96,8 +98,12 @@ namespace SmartBin.Infrastructure.Services
             _repository.InsertOne(newUser);
 
             // 5. Генерация токенов (Используем строковое представление ObjectId)
-            // Мы должны конвертировать ObjectId в string для использования в Claims JWT
-            return await _jwtService.GenerateTokenPairAsync(newUser.Id.ToString(), newUser.Nickname);
+            // 💡 ИЗМЕНЕНИЕ: Передаем объект UserRole в метод генерации токена
+            return await _jwtService.GenerateTokenPairAsync(
+                newUser.Id.ToString(),
+                newUser.Nickname,
+                newUser.Role // Передаем объект роли
+            );
         }
 
         public async Task<TokenPair> LoginAsync(string nickname, string password)
@@ -109,12 +115,16 @@ namespace SmartBin.Infrastructure.Services
             // 2. Проверка существования и пароля
             if (user == null || !_passwordHasher.VerifyPassword(password, user.PasswordHash))
             {
-                // Использование generic-исключения для безопасности
                 throw new AuthenticationException("Invalid nickname or password.");
             }
 
             // 3. Генерация токенов
-            return await _jwtService.GenerateTokenPairAsync(user.Id.ToString(), user.Nickname);
+            // 💡 ИЗМЕНЕНИЕ: Передаем объект UserRole, полученный из БД
+            return await _jwtService.GenerateTokenPairAsync(
+                user.Id.ToString(),
+                user.Nickname,
+                user.Role // Передаем объект роли
+            );
         }
 
     }
