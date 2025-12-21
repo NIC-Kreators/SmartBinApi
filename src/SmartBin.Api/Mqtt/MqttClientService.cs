@@ -1,5 +1,8 @@
-using System.Text;
 using MQTTnet;
+using SmartBin.Application.Services;
+using SmartBin.Domain.Models;
+using System.Text;
+using System.Text.Json;
 
 namespace SmartBin.Api.Mqtt;
 
@@ -9,7 +12,7 @@ public class MqttClientService : BackgroundService
     private readonly IMqttClient _client;
     private readonly MqttClientOptions _options;
     private readonly MqttClientSubscribeOptions _subscribeOptions;
-
+    private readonly IServiceScopeFactory _scopeFactory;
     public MqttClientService(IConfiguration config, ILogger<MqttClientService> logger)
     {
         _logger = logger;
@@ -32,14 +35,36 @@ public class MqttClientService : BackgroundService
         _options = optionsBuilder.Build();
         
         _logger.LogInformation("Options for MQTT server was built");
-        
-        _client.ApplicationMessageReceivedAsync += e =>
+
+
+        // MQTT message receiving
+        //_client.ApplicationMessageReceivedAsync += e =>
+        //{
+        //    var topic = e.ApplicationMessage.Topic;
+        //    var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+
+        //    _logger.LogDebug("Received message on topic \'{Topic}\': {Payload}", topic, payload);
+        //    return Task.CompletedTask;
+        //};
+        _client.ApplicationMessageReceivedAsync += async e =>
         {
-            var topic = e.ApplicationMessage.Topic;
+            var topic = e.ApplicationMessage.Topic; // например "bins/123/telemetry"
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            
-            _logger.LogDebug("Received message on topic \'{Topic}\': {Payload}", topic, payload);
-            return Task.CompletedTask;
+
+            // 1. Извлекаем ID (логика зависит от вашего формата топика)
+            var binId = topic.Split('/')[1];
+
+            // 2. Десериализуем payload
+            var telemetry = JsonSerializer.Deserialize<BinTelemetry>(payload);
+
+            // 3. СОЗДАЕМ SCOPE И ВЫЗЫВАЕМ СЕРВИС
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var binService = scope.ServiceProvider.GetRequiredService<IBinService>();
+                await binService.UpdateTelemetryAsync(binId, telemetry);
+            }
+
+            _logger.LogInformation("Updated bin {Id} via MQTT", binId);
         };
 
         var subscribeOptionsFilter = new MqttClientSubscribeOptionsBuilder();
