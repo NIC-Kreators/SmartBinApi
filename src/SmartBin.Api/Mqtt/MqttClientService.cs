@@ -57,6 +57,7 @@ public class MqttClientService : BackgroundService
             var telemetry = JsonSerializer.Deserialize<BinTelemetry>(payload);
 
             await binService.UpdateTelemetryAsync(binId, telemetry);
+            await binService.UpdateTelemetryHistoryAsync(binId, telemetry);
 
             _logger.LogInformation("Updated bin {Id} via MQTT", binId);
         };

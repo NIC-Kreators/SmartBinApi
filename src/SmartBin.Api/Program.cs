@@ -19,7 +19,7 @@ builder.Configuration
 
 builder.Host.UseSerilog((context, configuration) =>
                             configuration.ReadFrom.Configuration(context.Configuration));
-builder.Services.AddHostedService<MqttClientService>();
+builder.Services.AddScoped<MqttClientService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
 builder.Services.Configure<MongoSettings>(
