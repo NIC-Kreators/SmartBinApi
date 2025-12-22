@@ -104,6 +104,30 @@ public class BinsController : ControllerBase
             telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
             await _binService.UpdateTelemetryAsync(id, telemetry);
             await _binService.UpdateTelemetryHistoryAsync(id, telemetry);
+            // Проверка на аномалии
+            if (telemetry.IsSmokeDetected)
+            {
+                var alert = new Alert
+                {
+                    BinId = id,
+                    Type = AlertType.Smoke,
+                    Severity = AlertSeverity.Critical,
+                    Message = "Внимание! Обнаружено задымление в контейнере."
+                };
+                // await _alertService.CreateAsync(alert);
+            }
+
+            if (telemetry.FillLevel >= 90)
+            {
+                var alert = new Alert
+                {
+                    BinId = id,
+                    Type = AlertType.Fullness,
+                    Severity = telemetry.FillLevel >= 100 ? AlertSeverity.Critical : AlertSeverity.Warning,
+                    Message = $"Контейнер заполнен на {telemetry.FillLevel}%"
+                };
+                // await _alertService.CreateAsync(alert);
+            }
             return NoContent();
         }
         catch (KeyNotFoundException)

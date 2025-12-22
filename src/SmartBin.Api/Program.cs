@@ -32,6 +32,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBinService, BinService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+builder.Services.AddScoped<IAlertService, AlertService>();
+
+
 // Добавляем сервисы авторизации
 builder.Services.AddAuthorization(options =>
 {
