@@ -67,7 +67,7 @@ public class CleaningLogService : ICleaningLogService
         _repo.InsertOne(cleaning);
 
         // ѕример: обновление статуса бина после уборки
-        bin.Status = "Cleaned";
+        bin.Status = BinStatus.Active;
         bin.UpdatedAt = DateTime.UtcNow;
         _binRepo.ReplaceOne(bin);
 

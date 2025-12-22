@@ -84,5 +84,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/hello", () => "Hello").Stable();
+app.MapGet("/health", () => Results.Ok()).Stable();
 
 app.Run();

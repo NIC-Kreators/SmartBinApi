@@ -1,7 +1,9 @@
+using Bogus;
 using Microsoft.AspNetCore.Mvc;
-using SmartBin.Domain.Models;
-using SmartBin.Application.Services;
 using SmartBin.Api.Attributes;
+using SmartBin.Application.Services;
+using SmartBin.Domain.Models;
+using System;
 
 namespace SmartBin.Api.Controllers;
 
@@ -15,15 +17,22 @@ public class BinsController : ControllerBase
 
     // Поддерживает фильтрацию по статусу и минимальному уровню заполнения (в памяти)
     [HttpGet]
-    public async Task<ActionResult<List<Bin>>> Get([FromQuery] string? status = null, [FromQuery] int? minFillLevel = null)
+    public async Task<ActionResult<List<Bin>>> Get(
+    [FromQuery] BinStatus? status = null, // Изменили string? на BinStatus?
+    [FromQuery] int? minFillLevel = null)
     {
         var bins = await _binService.GetAllAsync();
 
-        if (!string.IsNullOrWhiteSpace(status))
-            bins = bins.Where(b => string.Equals(b.Status, status, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (status.HasValue)
+        {
+            // Теперь сравнение типизированное и быстрое
+            bins = bins.Where(b => b.Status == status.Value).ToList();
+        }
 
         if (minFillLevel.HasValue)
+        {
             bins = bins.Where(b => b.Telemetry != null && b.Telemetry.FillLevel >= minFillLevel.Value).ToList();
+        }
 
         return Ok(bins);
     }
@@ -110,10 +119,10 @@ public class BinsController : ControllerBase
     // Частичное обновление статуса бина через service.UpdateAsync
     public class UpdateStatusRequest
     {
-        public string Status { get; set; } = null!;
+        public BinStatus Status { get; set; }
     }
 
-   
+
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> PatchStatus(string id, [FromBody] UpdateStatusRequest req)
     {
@@ -137,4 +146,43 @@ public class BinsController : ControllerBase
             return Problem(detail: ex.Message);
         }
     }
+
+    [HttpPost("seed/{count}")]
+    public async Task<IActionResult> SeedBins(int count = 10)
+    {
+        // 1. Настройка генератора телеметрии
+        var telemetryFaker = new Faker<BinTelemetry>()
+            .RuleFor(t => t.FillLevel, f => f.Random.Int(0, 100))
+            .RuleFor(t => t.IsSmokeDetected, f => f.Random.Bool(0.05f)) // 5% шанс задымления
+            .RuleFor(t => t.IsOverloaded, f => f.Random.Bool(0.1f))     // 10% шанс переполнения
+            .RuleFor(t => t.LastUpdated, f => f.Date.Recent(1));
+
+        // 2. Настройка генератора Bin
+        var binFaker = new Faker<Bin>()
+            .RuleFor(b => b.Type, f => f.PickRandom<BinType>())
+            .RuleFor(b => b.Status, f => f.PickRandom<BinStatus>())
+            // Генерация координат в пределах Алматы
+            .RuleFor(b => b.Location, f => new GeoPoint(new double[]
+            {
+            f.Address.Longitude(76.80, 77.00), // Долгота
+            f.Address.Latitude(43.20, 43.30)   // Широта
+            }))
+            .RuleFor(b => b.Telemetry, f => telemetryFaker.Generate())
+            // Генерируем историю из 5 случайных записей
+            .RuleFor(b => b.TelemetryHistory, f => telemetryFaker.Generate(5).ToArray())
+            .RuleFor(b => b.CreatedAt, f => f.Date.Past(1))
+            .RuleFor(b => b.UpdatedAt, f => DateTime.UtcNow);
+
+        // 3. Генерация и сохранение
+        var fakeBins = binFaker.Generate(count);
+
+        foreach (var bin in fakeBins)
+        {
+            await _binService.CreateAsync(bin);
+        }
+
+        return Ok(new { message = $"Successfully seeded {count} bins in Almaty region", data = fakeBins });
+    }
+
+
 }
