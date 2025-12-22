@@ -85,7 +85,7 @@ namespace SmartBin.Application.GenericRepository
             try
             {
                 var objectId = ObjectId.Parse(id);
-                var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, objectId);
+                var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
                 return await _collection.Find(filter).FirstOrDefaultAsync();
             }
             catch (Exception)
@@ -126,7 +126,7 @@ namespace SmartBin.Application.GenericRepository
             try
             {
                 var objectId = ObjectId.Parse(id);
-                var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, objectId);
+                var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, id);
                 _collection.DeleteOne(filter);
             }
             catch (Exception)

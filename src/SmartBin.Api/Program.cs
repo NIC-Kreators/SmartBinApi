@@ -23,7 +23,7 @@ builder.Services.AddScoped<MqttClientService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
 builder.Services.Configure<MongoSettings>(
-    builder.Configuration.GetSection("Database"));
+    builder.Configuration.GetSection("MongoSettings"));
 
 builder.Services.AddSingleton<IMongoSettings>(provider =>
     provider.GetRequiredService<IOptions<MongoSettings>>().Value);
@@ -85,7 +85,7 @@ if (app.Environment.IsDevelopment())
             });
     });
 }
-
+app.MapControllers();
 app.MapGet("/hello", () => "Hello").Stable();
 app.MapGet("/health", () => Results.Ok()).Stable();
 

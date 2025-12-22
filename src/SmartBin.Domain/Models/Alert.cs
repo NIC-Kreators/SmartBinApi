@@ -21,7 +21,8 @@ namespace SmartBin.Domain.Models
     public class Alert : IEntity
     {
         [BsonId]
-        public ObjectId Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public string BinId { get; set; } = null!; // ID контейнера, где произошла аномалия
 
         public AlertType Type { get; set; }

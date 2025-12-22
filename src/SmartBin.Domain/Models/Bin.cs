@@ -31,7 +31,9 @@ namespace SmartBin.Domain.Models
     }
     public class Bin : IEntity
     {
-        public ObjectId Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public BinType Type { get; set; }
         public GeoPoint Location { get; set; }
         public BinTelemetry Telemetry { get; set; }
