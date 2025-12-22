@@ -94,6 +94,7 @@ public class BinsController : ControllerBase
         {
             telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
             await _binService.UpdateTelemetryAsync(id, telemetry);
+            await _binService.UpdateTelemetryHistoryAsync(id, telemetry);
             return NoContent();
         }
         catch (KeyNotFoundException)

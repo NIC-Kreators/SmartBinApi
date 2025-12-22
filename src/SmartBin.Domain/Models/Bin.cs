@@ -9,6 +9,7 @@ namespace SmartBin.Domain.Models
         public string Type { get; set; }
         public string Location { get; set; }
         public BinTelemetry Telemetry { get; set; }
+        public BinTelemetry[] TelemetryHistory { get; set; }
         public string Status { get; set; }
 
         public DateTime CreatedAt { get; set; }

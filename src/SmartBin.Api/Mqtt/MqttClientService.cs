@@ -12,8 +12,7 @@ public class MqttClientService : BackgroundService
     private readonly IMqttClient _client;
     private readonly MqttClientOptions _options;
     private readonly MqttClientSubscribeOptions _subscribeOptions;
-    private readonly IServiceScopeFactory _scopeFactory;
-    public MqttClientService(IConfiguration config, ILogger<MqttClientService> logger)
+    public MqttClientService(IConfiguration config, ILogger<MqttClientService> logger, IBinService binService)
     {
         _logger = logger;
         
@@ -57,12 +56,7 @@ public class MqttClientService : BackgroundService
             // 2. Десериализуем payload
             var telemetry = JsonSerializer.Deserialize<BinTelemetry>(payload);
 
-            // 3. СОЗДАЕМ SCOPE И ВЫЗЫВАЕМ СЕРВИС
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var binService = scope.ServiceProvider.GetRequiredService<IBinService>();
-                await binService.UpdateTelemetryAsync(binId, telemetry);
-            }
+            await binService.UpdateTelemetryAsync(binId, telemetry);
 
             _logger.LogInformation("Updated bin {Id} via MQTT", binId);
         };

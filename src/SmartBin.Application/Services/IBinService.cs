@@ -10,4 +10,6 @@ public interface IBinService
     Task UpdateAsync(string id, Bin bin);
     Task DeleteAsync(string id);
     Task UpdateTelemetryAsync(string binId, BinTelemetry telemetry);
+    Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry);
+
 }

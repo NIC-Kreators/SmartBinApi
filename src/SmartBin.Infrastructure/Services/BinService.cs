@@ -69,4 +69,30 @@ public class BinService : IBinService
         _repository.ReplaceOne(existing);
         await Task.CompletedTask;
     }
+
+
+    // Реализация метода интерфейса для обновления истории телеметрии
+    public async Task UpdateTelemetryHistoryAsync(string binId, BinTelemetry telemetry)
+    {
+        // 1. Поиск существующей записи
+        var existing = await _repository.FindById(binId);
+        if (existing == null)
+            throw new KeyNotFoundException($"Bin '{binId}' not found.");
+
+        // 2. Подготовка данных телеметрии
+        telemetry.LastUpdated = telemetry.LastUpdated == default ? DateTime.UtcNow : telemetry.LastUpdated;
+
+        // 3. Добавление в историю
+        // Приводим массив к списку для удобного добавления, либо создаем новый, если история пуста
+        var historyList = existing.TelemetryHistory?.ToList() ?? new List<BinTelemetry>();
+        historyList.Add(telemetry);
+
+        // 4. Обновление объекта
+        existing.TelemetryHistory = historyList.ToArray();
+        existing.UpdatedAt = DateTime.UtcNow;
+
+        // 5. Сохранение изменений
+        _repository.ReplaceOne(existing);
+        await Task.CompletedTask;
+    }
 }
