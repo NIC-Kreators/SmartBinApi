@@ -11,6 +11,11 @@ env:
   ECS_SERVICE: ${{ vars.ECS_SERVICE || 'smart-bin-api-service' }}
   ECS_CLUSTER: ${{ vars.ESC_CLUSTER || 'smart-bin-cluster' }}
   
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  
 jobs:
   deploy:
     name: Deploy Production
