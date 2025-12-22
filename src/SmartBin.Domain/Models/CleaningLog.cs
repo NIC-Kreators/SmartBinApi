@@ -1,10 +1,13 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace SmartBin.Domain.Models
 {
     public class CleaningLog : IEntity
     {
-        public ObjectId Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public ObjectId BinId { get; set; }
         public ObjectId UserId { get; set; }
         public DateTime StartedAt { get; set; }
