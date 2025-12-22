@@ -2,39 +2,41 @@
 using Microsoft.IdentityModel.Tokens;
 using SmartBin.Application.Services;
 using SmartBin.Domain.Models;
-using System;
 using System.Collections.Concurrent;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging; // Добавили
 
 namespace SmartBin.Infrastructure.Services
 {
     public class JwtService : IJwtService
     {
-        // ⚠️ В реальном проекте замените это на репозиторий IRepository<RefreshToken> для работы с БД
         private static readonly ConcurrentDictionary<string, string> _refreshTokens = new();
-
         private readonly IConfiguration _configuration;
         private readonly byte[] _secretKeyBytes;
+        private readonly ILogger<JwtService> _logger; // Поле для логгера
 
-        public JwtService(IConfiguration configuration)
+        public JwtService(IConfiguration configuration, ILogger<JwtService> logger)
         {
             _configuration = configuration;
+            _logger = logger;
 
-            // Получаем секретный ключ из конфигурации
+            _logger.LogDebug("Initializing JwtService...");
+
             var secret = _configuration["Jwt:Key"]
                          ?? throw new InvalidOperationException("Jwt:Key not configured.");
 
             _secretKeyBytes = Encoding.ASCII.GetBytes(secret);
+
+            _logger.LogInformation("JwtService initialized with secret key from configuration.");
         }
 
         private string GenerateAccessToken(string userId, string userName, UserRole role)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
+            _logger.LogDebug("Generating Access Token for user: {UserName} (ID: {UserId}) with role: {Role}", userName, userId, role.Name);
 
+            var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(_secretKeyBytes);
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -42,58 +44,85 @@ namespace SmartBin.Infrastructure.Services
             {
               new Claim(JwtRegisteredClaimNames.Sub, userId),
               new Claim(ClaimTypes.Name, userName),
-              // 💡 Добавляем Claim с типом роли
               new Claim(ClaimTypes.Role, role.Name)
             };
-
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(15), // Access Token на 15 минут
+                Expires = DateTime.UtcNow.AddMinutes(15),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
                 SigningCredentials = credentials
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            var encodedToken = tokenHandler.WriteToken(token);
+
+            _logger.LogTrace("Access Token successfully generated for ID: {UserId}", userId);
+            return encodedToken;
         }
 
         private string GenerateRefreshToken()
         {
-            // Генерация простого GUID как Refresh Token
-            // В продакшене лучше использовать криптографически сильные случайные строки
-            return Guid.NewGuid().ToString("N");
+            var token = Guid.NewGuid().ToString("N");
+            _logger.LogTrace("New Refresh Token string generated.");
+            return token;
         }
 
         public async Task<TokenPair> GenerateTokenPairAsync(string userId, string userName, UserRole role)
         {
+            _logger.LogInformation("Creating new Token Pair for user {UserId}", userId);
+
             var accessToken = GenerateAccessToken(userId, userName, role);
             var refreshToken = GenerateRefreshToken();
 
-            // ⚠️ В продакшене: сохранение Refresh Token в БД с его сроком действия (3 месяца)
-            // Здесь мы просто сохраняем токен в in-memory хранилище
-            _refreshTokens.AddOrUpdate(userId, refreshToken, (key, oldValue) => refreshToken);
+            _refreshTokens.AddOrUpdate(userId, refreshToken, (key, oldValue) =>
+            {
+                _logger.LogDebug("Updating existing Refresh Token in memory for user {UserId}", userId);
+                return refreshToken;
+            });
 
+            _logger.LogInformation("Token pair successfully generated and stored for user {UserId}", userId);
             return new TokenPair(accessToken, refreshToken);
         }
 
         public async Task<bool> IsRefreshTokenValidAsync(string userId, string refreshToken)
         {
-            // ⚠️ В продакшене: запрос к БД для проверки, совпадает ли токен 
-            // и не истек ли его срок действия (3 месяца)
+            _logger.LogDebug("Validating Refresh Token for user {UserId}", userId);
+
             if (_refreshTokens.TryGetValue(userId, out var storedToken))
             {
-                return storedToken == refreshToken;
+                var isValid = storedToken == refreshToken;
+                if (isValid)
+                {
+                    _logger.LogInformation("Refresh Token is valid for user {UserId}", userId);
+                }
+                else
+                {
+                    _logger.LogWarning("Refresh Token mismatch for user {UserId}. Access denied.", userId);
+                }
+                return isValid;
             }
+
+            _logger.LogWarning("No Refresh Token found in memory for user {UserId}", userId);
             return false;
         }
 
         public async Task RemoveRefreshTokenAsync(string userId, string refreshToken)
         {
-            // ⚠️ В продакшене: удаление токена из БД
-            _refreshTokens.TryRemove(userId, out _);
+            _logger.LogInformation("Attempting to remove Refresh Token for user {UserId}", userId);
+
+            if (_refreshTokens.TryRemove(userId, out _))
+            {
+                _logger.LogInformation("Refresh Token removed successfully for user {UserId}", userId);
+            }
+            else
+            {
+                _logger.LogDebug("No Refresh Token was found to remove for user {UserId}", userId);
+            }
+
+            await Task.CompletedTask;
         }
     }
 }

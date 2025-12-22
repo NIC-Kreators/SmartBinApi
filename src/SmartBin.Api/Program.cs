@@ -19,7 +19,7 @@ builder.Configuration
 
 builder.Host.UseSerilog((context, configuration) =>
                             configuration.ReadFrom.Configuration(context.Configuration));
-builder.Services.AddHostedService<MqttClientService>();
+builder.Services.AddScoped<MqttClientService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
 builder.Services.Configure<MongoSettings>(
@@ -32,6 +32,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBinService, BinService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+builder.Services.AddScoped<IAlertService, AlertService>();
+
+
 // Добавляем сервисы авторизации
 builder.Services.AddAuthorization(options =>
 {
@@ -84,5 +87,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/hello", () => "Hello").Stable();
+app.MapGet("/health", () => Results.Ok()).Stable();
 
 app.Run();
