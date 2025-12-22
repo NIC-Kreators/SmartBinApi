@@ -11,6 +11,10 @@ using SmartBin.Domain.Models;
 using SmartBin.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.CaptureStartupErrors(true);
+builder.WebHost.UseSetting("detailedErrors", "true");
+
 builder.Services.AddOpenApi();
 
 builder.Configuration
@@ -35,28 +39,28 @@ builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
 
-// Добавляем сервисы авторизации
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 builder.Services.AddAuthorization(options =>
 {
-    // Определяем политики для каждой существующей роли, которую мы хотим проверять
-    // Эту часть можно автоматизировать через рефлексию, но для примера сделаем вручную:
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:
 
-    // Политика для Admin: требует прав AdminRole
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Admin: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ AdminRole
     options.AddPolicy("MinimumRole_Admin", policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireAssertion(context => context.User.ValidateToken(AdminRole.Instance));
     });
 
-    // Политика для SalesManager: требует прав SalesManagerRole
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ SalesManager: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ SalesManagerRole
     options.AddPolicy("MinimumRole_SalesManager", policy =>
     {
         policy.RequireAuthenticatedUser();
-        // Здесь используется метод расширения ValidateToken
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ValidateToken
         policy.RequireAssertion(context => context.User.ValidateToken(SalesManagerRole.Instance));
     });
 
-    // Политика для Guest: требует прав GuestRole
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Guest: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ GuestRole
     options.AddPolicy("MinimumRole_Guest", policy =>
     {
         policy.RequireAuthenticatedUser();
