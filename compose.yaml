@@ -5,13 +5,13 @@ services:
     image: smartbin.api
     container_name: smartbin.api
     ports:
-      - "5185:5185" # HTTP
+      - "8080:8080" # HTTP
     build:
       context: .
       dockerfile: Dockerfile
       args:
         ENVIRONMENT: "Development"
-        PORT: 5185
+        PORT: 8080
     depends_on:
       - smartbin.mongo
       - smartbin.mosquitto

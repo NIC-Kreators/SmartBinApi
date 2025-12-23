@@ -11,7 +11,7 @@ namespace SmartBin.Api.Services
         public MongoDbService(IConfiguration config)
         {
             var mongo = config.GetSection("MongoDB");
-            var client = new MongoClient(mongo["ConnectionString"]);
+            var client = new MongoClient(config.GetValue<string>("MONGO_CONNECTION_STRING"));
             var db = client.GetDatabase(mongo["DatabaseName"]);
 
             Users = db.GetCollection<User>(mongo["UsersCollection"]);
