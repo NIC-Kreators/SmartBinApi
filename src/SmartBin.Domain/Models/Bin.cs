@@ -36,8 +36,8 @@ namespace SmartBin.Domain.Models
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public BinType Type { get; set; }
         public GeoPoint Location { get; set; }
-        public BinTelemetry Telemetry { get; set; }
-        public BinTelemetry[] TelemetryHistory { get; set; }
+        public required BinTelemetry Telemetry { get; set; }
+        public BinTelemetry[] TelemetryHistory { get; set; } = [];
         public BinStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }

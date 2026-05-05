@@ -11,9 +11,9 @@ namespace SmartBin.Domain.Models
         public ObjectId UserId { get; set; }
         public DateTime StartedAt { get; set; }
         public DateTime EndedAt { get; set; }
-        public List<ObjectId> CleanedBins { get; set; }
+        public List<ObjectId> CleanedBins { get; set; } = [];
         public double DistanceTravelledKm { get; set; }
-        public string Route { get; set; }
+        public required string Route { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

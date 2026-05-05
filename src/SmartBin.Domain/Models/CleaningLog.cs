@@ -13,7 +13,7 @@ namespace SmartBin.Domain.Models
         public DateTime StartedAt { get; set; }
         public DateTime FinishedAt { get; set; }
         public int RemovedWeightKg { get; set; }
-        public string Notes { get; set; }
+        public required string Notes { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
