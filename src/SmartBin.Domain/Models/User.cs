@@ -9,9 +9,9 @@ namespace SmartBin.Domain.Models
         [BsonRepresentation(BsonType.ObjectId)] // Магия здесь!
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public UserRole Role { get; set; } = GuestRole.Instance;
-        public string Nickname { get; set; }
-        public string FullName { get; set; }
-        public string PasswordHash { get; set; }
+        public required string Nickname { get; init; }
+        public required string FullName { get; set; }
+        public required string PasswordHash { get; set; }
 
         public bool PasswordRecreationRequired { get; set; } = false;
         public DateTime PasswordLastChangedAt { get; set; }
