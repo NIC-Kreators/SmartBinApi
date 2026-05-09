@@ -1,8 +1,10 @@
 ﻿namespace SmartBin.Application.GenericRepository
 {
+    // TODO: is it an interface?
+    // That should be used as record with IOptions pattern anyway
     public class IMongoSettings
     {
-        public string DatabaseName { get; set; }
-        public string ConnectionString { get; set; }
+        public required string DatabaseName { get; set; }
+        public required string ConnectionString { get; set; }
     }
 }

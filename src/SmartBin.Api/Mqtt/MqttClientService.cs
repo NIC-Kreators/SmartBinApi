@@ -8,7 +8,7 @@ namespace SmartBin.Api.Mqtt;
 
 public class MqttClientService : BackgroundService
 {
-    private ILogger<MqttClientService> _logger;
+    private readonly ILogger<MqttClientService> _logger;
     private readonly IMqttClient _client;
     private readonly MqttClientOptions _options;
     private readonly MqttClientSubscribeOptions _subscribeOptions;
@@ -47,14 +47,20 @@ public class MqttClientService : BackgroundService
         //};
         _client.ApplicationMessageReceivedAsync += async e =>
         {
-            var topic = e.ApplicationMessage.Topic; // например "bins/123/telemetry"
+            var topic = e.ApplicationMessage.Topic; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "bins/123/telemetry"
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 
-            // 1. Извлекаем ID (логика зависит от вашего формата топика)
+            // 1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ID (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
             var binId = topic.Split('/')[1];
 
-            // 2. Десериализуем payload
+            // 2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ payload
             var telemetry = JsonSerializer.Deserialize<BinTelemetry>(payload);
+            
+            if (telemetry is null)
+            {
+                _logger.LogWarning("Received invalid telemetry data for bin {Id}: {Payload}", binId, payload);
+                return;
+            }
 
             await binService.UpdateTelemetryAsync(binId, telemetry);
             await binService.UpdateTelemetryHistoryAsync(binId, telemetry);
