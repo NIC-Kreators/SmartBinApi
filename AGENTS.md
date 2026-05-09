@@ -1,7 +1,6 @@
 # AGENTS.md
 
 WARNING: temporary IGNORE this file. It describes the current state of the codebase, but it will be significantly refactored in the future.
-Note: AI instructions are built on top of Claude. So for more instructions on how to use Claude Code effectively, refer to the `.claude` directory where specific agents, skills, rules and so on are defined for tasks like code review, generation, etc.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
